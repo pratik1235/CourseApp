@@ -39,6 +39,7 @@ public class CourseController {
     @GetMapping("/courses/{courseId}")
     public ResponseEntity<Course> retrieveCourse(@PathVariable String courseId)
     {
+        System.out.println("course id is" +courseId);
         Course course=courseService.getCourse(courseId);
         if(course==null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);      //404 not found
@@ -59,6 +60,14 @@ public class CourseController {
 
         //.created will specify the 201 status code= content created also
         return ResponseEntity.created(location).build();        
+    }
+
+    //to add a list of courses......just for the purpose of data adding I have made it
+    @PostMapping("/courses_all")
+    public ResponseEntity<Void> addCoursesList(@RequestBody List<Course> newCourses)
+    {
+        courseService.addCoursesList(newCourses);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // @PutMapping("/")

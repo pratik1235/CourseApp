@@ -1,10 +1,11 @@
 package com.cashfree.springboot.courseapp.service;
 
+import com.cashfree.springboot.courseapp.dao.CourseDao;
 import com.cashfree.springboot.courseapp.entity.Course;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 
 
@@ -13,19 +14,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class CourseServiceImpl implements CourseService{
 
-
-    
-
-    private static List<Course> courses = new ArrayList<Course>(){{add(new Course(123456L,"Java","OOPS SDE"));
-                                    add(new Course(123457L,"C++","OS EMBEDDED SYSTEMS"));
-                                    add(new Course(123458L,"LATEX","PDF"));
-                                    add(new Course(123459L,"JS","WEBDEV"));
-                                    add(new Course(123460L,"PYTHON","ML BACKEND"));
-                                    add(new Course(123461L,"HTML","WEB MARKUP"));}};
+    @Autowired
+    private CourseDao courseDao;
 
     @Override
     public List<Course> getAllCourses() {
-        return courses;
+        
+        return courseDao.findAll();
     }
 
     @Override
@@ -39,22 +34,24 @@ public class CourseServiceImpl implements CourseService{
         catch(NumberFormatException nfe){
             return null;
         }
-        
-        for(Course course: courses)
-        {
-            if(course.getId().equals(courseId))
-                return course;
+        // System.out.println("course id is is "+ courseId);
+        Course course;
+        try{
+            course=courseDao.existsById(courseId) ==true ? courseDao.getById(courseId) : null; 
         }
-        return null;
+        catch(Exception e)
+        {
+            return null;
+        }
+        return course;
     }
 
     @Override
     public Course addCourse(Course newCourse) {
-        
-        Long randomId= new Random().nextLong();
-        newCourse.setId(randomId);
-        courses.add(newCourse);
-        return newCourse;       //returning so that we know what is created
+    
+        Course savedCourse=courseDao.save(newCourse);
+
+        return savedCourse;       //returning so that we know what is created
     }
 
     @Override
@@ -69,18 +66,26 @@ public class CourseServiceImpl implements CourseService{
             return null;
         }
 
-        Course deletedCourse ;
-        for(Course course: courses)
-        {
-            if(course.getId().equals(courseId))
-                {
-                    deletedCourse= course;
-                    courses.remove(deletedCourse);
-                    return deletedCourse;
-                }
+        Course course=null;
+        try{
+            if(courseDao.existsById(courseId) ==true)
+            {
+                course=courseDao.getById(courseId);
+                courseDao.deleteById(courseId); 
+            }
+             
         }
+        catch(Exception e)
+        {
+            return null;
+        }
+        return course;
 
-        return null;
+    }
 
+    @Override               //just for ease of random data addition using this method
+    public void addCoursesList(List<Course> newCourses) {
+        courseDao.saveAll(newCourses);
+        
     }
 }

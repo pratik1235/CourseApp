@@ -1,11 +1,15 @@
 package com.cashfree.springboot.courseapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 
+//since s very likely to always return an instance and throw an javax.persistence.EntityNotFoundException on first access.
+//so either we use other methods in dao which don't throw it or use this annotation @JsonIgnoreProperties
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})       
 @Entity
 public class Course {
 

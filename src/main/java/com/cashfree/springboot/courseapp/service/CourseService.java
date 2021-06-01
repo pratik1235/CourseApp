@@ -10,5 +10,6 @@ public interface CourseService {        //interface used for loose coupling
     public Course getCourse(String courseId);
     public Course addCourse(Course newCourse);
     public Course deleteCourse(String courseId);
+    public void addCoursesList(List<Course> newCourses);
 
 }
